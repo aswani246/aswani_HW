@@ -1,4 +1,4 @@
-# aswani_HW--Q1: Count how many students passed the exam.
+--Q1: Count how many students passed the exam.
 
 select
 count(result_status)
