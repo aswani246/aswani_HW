@@ -1,0 +1,40 @@
+--Find the names of students who improved their scores every single day (Day 3 > Day 2 AND Day 2 > Day 1). 
+--Also, display the name of the Month they were born in using a date function.
+select
+t1.full_name,
+to_char(dob,'month') as birth_month,
+t2.total_score as day1,
+t3.total_score as day2,
+t4.total_score as day3
+from "RSVP_New" as t1
+join day_1_exam as t2 on t1.hall_ticket_no = t2.hall_ticket_no
+join day_2_exam as t3 on t1.hall_ticket_no = t3.hall_ticket_no
+join day_3_exam as t4 on t1.hall_ticket_no = t4.hall_ticket_no
+where t4.total_score > t3.total_score
+  and t3.total_score > t2.total_score;
+
+--List the names and contact numbers of students who attended the Day 1 AND Day 2 exams, but EXCEPT those who showed up for Day 3.
+
+select
+t1.full_name,
+t1.contact_no
+from "RSVP_New" as t1
+join day_1_exam as t2 on t1.hall_ticket_no = t2.hall_ticket_no
+join day_2_exam as t3 on t1.hall_ticket_no = t3.hall_ticket_no
+where not exists (
+select 1
+from day_3_exam as t4
+where t4.hall_ticket_no = t1.hall_ticket_no);
+
+--Find the students who registered in the Morning (before 12:00 PM) and scored higher than the average class score of Day 3.
+
+select t1.full_name,
+t1.created_at,
+t2.total_score as total_score
+from "RSVP_New" as t1
+join day_3_exam as t2
+on t1.hall_ticket_no = t2.hall_ticket_no
+where time(created_at) < '12:00:00'
+AND t2.total_score >
+(SELECT AVG(total_score) FROM day_3_exam)
+order by total_score desc;
